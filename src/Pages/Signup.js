@@ -12,7 +12,10 @@ import { registerUser, resetState } from "../features/user/userSlice";
 const signUpSchema = yup.object({
   firstname: yup.string().required("First Name is Required"),
   lastname: yup.string().required("Last Name is Required"),
-  email: yup.string().nullable().email("Email is Required"),
+  email: yup
+    .string()
+    .email("Email should be valid")
+    .required("Email Address is Required"),
   mobile: yup.string().required("Mobile No. is Required"),
   password: yup.string().required("Password is Required"),
 });
@@ -46,7 +49,7 @@ const SignUp = () => {
       formik.resetForm();
       setTimeout(() => {
         dispatch(resetState());
-      },300);
+      }, 300);
     },
   });
   return (
@@ -119,7 +122,9 @@ const SignUp = () => {
                   {formik.touched.password && formik.errors.password}
                 </div>
                 <div className="mt-3 d-flex justify-content-center align-items-center gap-15">
-                  <button type="submit" className="button border-0">Sign Up</button>
+                  <button type="submit" className="button border-0">
+                    Sign Up
+                  </button>
                 </div>
               </form>
             </div>
