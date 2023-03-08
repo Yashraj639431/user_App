@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import { authService } from "./userService";
 
 export const registerUser = createAsyncThunk(
@@ -12,6 +12,7 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+export const resetState = createAction("Reset_All");
 const initialState = {
   user: "",
   isError: false,
@@ -33,13 +34,15 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isError = false;
         state.isSuccess = true;
+        state.createdUser = action.payload;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.isSuccess = false;
         state.message = action.error;
-      });
+      })
+      .addCase(resetState, () => initialState);
   },
 });
 
