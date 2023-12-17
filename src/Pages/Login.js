@@ -1,3 +1,4 @@
+// import React, { useEffect } from "react";
 import React, { useEffect } from "react";
 import BreadCrum from "../components/BreadCrum";
 import Meta from "../components/Meta";
@@ -8,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CustomInput from "../components/CustomInput";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { loginUser, resetState } from "../features/user/userSlice";
+import { loginUser } from "../features/user/userSlice";
 
 const loginSchema = yup.object({
   email: yup
@@ -33,7 +34,6 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const formik = useFormik({
-    enableReinitialize: true,
     initialValues: {
       email: "",
       password: "",
@@ -41,10 +41,6 @@ const Login = () => {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       dispatch(loginUser(values));
-      formik.resetForm();
-      setTimeout(() => {
-        dispatch(resetState());
-      }, 300);
     },
   });
   return (

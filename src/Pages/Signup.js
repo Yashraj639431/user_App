@@ -7,7 +7,7 @@ import CustomInput from "../components/CustomInput";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser, resetState } from "../features/user/userSlice";
+import { registerUser } from "../features/user/userSlice";
 
 const signUpSchema = yup.object({
   firstname: yup.string().required("First Name is Required"),
@@ -46,10 +46,6 @@ const SignUp = () => {
     validationSchema: signUpSchema,
     onSubmit: (values) => {
       dispatch(registerUser(values));
-      formik.resetForm();
-      setTimeout(() => {
-        dispatch(resetState());
-      }, 300);
     },
   });
   return (
