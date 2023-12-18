@@ -1,7 +1,7 @@
 import React from "react";
 import ReactStars from "react-rating-stars-component";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { addToWishlist } from "../features/product/productSlice";
 
@@ -37,9 +37,7 @@ const ProductCart = (props) => {
               <div className="wishlist-icon position-absolute">
                 <button
                   className="border-0 bg-transparent"
-                  onClick={(e) => {
-                    addToWish(item?._id);
-                  }}
+                  onClick={(e) => {addToWish(item?._id)}}
                 >
                   <img src="/images/wish.svg" alt="wishlist" />
                 </button>
