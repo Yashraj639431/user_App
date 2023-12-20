@@ -23,21 +23,16 @@ const ProductCart = (props) => {
               location.pathname === "/product" ? `gr-${grid}` : "col-3"
             } `}
           >
-            <Link
-              // to={`${
-              //   location.pathname == "/"
-              //     ? "/product/:id"
-              //     : location.pathname == "/product/:id"
-              //     ? "/product/:id"
-              //     : ":id"
-              // }`}
-              className="product-card position-relative"
-            >
+            <div className="product-card position-relative">
               <div className="wishlist-icon position-absolute">
                 <button className="border-0 bg-transparent">
-                  <img src="/images/wish.svg" alt="wishlist" onClick={() => {
-                    addToWish(item?._id);
-                  }} />
+                  <img
+                    src="/images/wish.svg"
+                    alt="wishlist"
+                    onClick={() => {
+                      addToWish(item?._id);
+                    }}
+                  />
                 </button>
               </div>
               <div className="product-image text-center">
@@ -60,7 +55,7 @@ const ProductCart = (props) => {
                 <ReactStars
                   count={5}
                   size={24}
-                  value={Number(item?.totalrating)}
+                  value={item?.totalrating}
                   edit={false}
                   activeColor="#ffd700"
                 />
@@ -77,15 +72,18 @@ const ProductCart = (props) => {
                   <button className="border-0 bg-transparent">
                     <img src="/images/prodcompare.svg" alt="compare" />
                   </button>
-                  <button className="border-0 bg-transparent">
+                  <Link
+                    to={`/product/${item?._id}`}
+                    className="border-0 bg-transparent"
+                  >
                     <img src="/images/view.svg" alt="view" />
-                  </button>
+                  </Link>
                   <button className="border-0 bg-transparent">
                     <img src="/images/add-cart.svg" alt="addcart" />
                   </button>
                 </div>
               </div>
-            </Link>
+            </div>
           </div>
         );
       })}

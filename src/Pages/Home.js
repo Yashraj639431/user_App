@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Marquee from "react-fast-marquee";
 import BlogCard from "../components/BlogCard";
 import ProductCart from "../components/ProductCard";
@@ -20,6 +20,8 @@ const Home = () => {
   const productState = useSelector((state) => state.product.product);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   useEffect(() => {
     getBlogs();
     getallProducts();
@@ -214,16 +216,7 @@ const Home = () => {
                 if (item.tags === "featured") {
                   return (
                     <div key={index} className="col-3">
-                      <Link
-                        // to={`${
-                        //   location.pathname == "/"
-                        //     ? "/product/:id"
-                        //     : location.pathname == "/product/:id"
-                        //     ? "/product/:id"
-                        //     : ":id"
-                        // }`}
-                        className="product-card position-relative"
-                      >
+                      <div className="product-card position-relative">
                         <div className="wishlist-icon position-absolute">
                           <button className="border-0 bg-transparent">
                             <img
@@ -255,7 +248,7 @@ const Home = () => {
                           <ReactStars
                             count={5}
                             size={24}
-                            value={Number(item?.totalrating)}
+                            value={item?.totalrating}
                             edit={false}
                             activeColor="#ffd700"
                           />
@@ -270,14 +263,20 @@ const Home = () => {
                               />
                             </button>
                             <button className="border-0 bg-transparent">
-                              <img src="/images/view.svg" alt="view" />
+                              <img
+                                onClick={() =>
+                                  navigate("/product/" + item?._id)
+                                }
+                                src="/images/view.svg"
+                                alt="view"
+                              />
                             </button>
                             <button className="border-0 bg-transparent">
                               <img src="/images/add-cart.svg" alt="addcart" />
                             </button>
                           </div>
                         </div>
-                      </Link>
+                      </div>
                     </div>
                   );
                 }
@@ -362,6 +361,7 @@ const Home = () => {
                 if (item.tags === "special") {
                   return (
                     <SpecialProducts
+                      id={item?._id}
                       key={index}
                       title={item?.title}
                       brand={item?.brand}
@@ -390,16 +390,7 @@ const Home = () => {
               if (item.tags === "popular") {
                 return (
                   <div key={index} className="col-3">
-                    <Link
-                      // to={`${
-                      //   location.pathname == "/"
-                      //     ? "/product/:id"
-                      //     : location.pathname == "/product/:id"
-                      //     ? "/product/:id"
-                      //     : ":id"
-                      // }`}
-                      className="product-card position-relative"
-                    >
+                    <div className="product-card position-relative">
                       <div className="wishlist-icon position-absolute">
                         <button className="border-0 bg-transparent">
                           <img
@@ -431,7 +422,7 @@ const Home = () => {
                         <ReactStars
                           count={5}
                           size={24}
-                          value={Number(item?.totalrating)}
+                          value={item?.totalrating}
                           edit={false}
                           activeColor="#ffd700"
                         />
@@ -443,14 +434,18 @@ const Home = () => {
                             <img src="/images/prodcompare.svg" alt="compare" />
                           </button>
                           <button className="border-0 bg-transparent">
-                            <img src="/images/view.svg" alt="view" />
+                            <img
+                              onClick={() => navigate("/product/" + item?._id)}
+                              src="/images/view.svg"
+                              alt="view"
+                            />
                           </button>
                           <button className="border-0 bg-transparent">
                             <img src="/images/add-cart.svg" alt="addcart" />
                           </button>
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   </div>
                 );
               }

@@ -3,7 +3,7 @@ import BreadCrum from "../components/BreadCrum";
 import Meta from "../components/Meta";
 import ReactStars from "react-rating-stars-component";
 import ProductCard from "../components/ProductCard";
-import Color from "./Color";
+import Color from "../components/Color";
 import Container from "./Container";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../features/product/productSlice";

@@ -1,7 +1,7 @@
 import React from 'react';
 import BreadCrum from '../components/BreadCrum';
 import Meta from '../components/Meta';
-import Color from './Color';
+import Color from '../components/Color';
 import Container from './Container';
 
 const CompareProduct = () => {
