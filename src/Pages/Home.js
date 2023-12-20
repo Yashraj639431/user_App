@@ -18,7 +18,6 @@ import {
 const Home = () => {
   const blogState = useSelector((state) => state?.blog?.blog);
   const productState = useSelector((state) => state.product.product);
-  // console.log(productState);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -209,10 +208,81 @@ const Home = () => {
           <div className="col-12">
             <div className="section-heading">Featured Collection</div>
           </div>
-          <ProductCart />
-          <ProductCart />
-          <ProductCart />
-          <ProductCart />
+          <div className="row">
+            {productState &&
+              productState?.map((item, index) => {
+                if (item.tags === "featured") {
+                  return (
+                    <div key={index} className="col-3">
+                      <Link
+                        // to={`${
+                        //   location.pathname == "/"
+                        //     ? "/product/:id"
+                        //     : location.pathname == "/product/:id"
+                        //     ? "/product/:id"
+                        //     : ":id"
+                        // }`}
+                        className="product-card position-relative"
+                      >
+                        <div className="wishlist-icon position-absolute">
+                          <button className="border-0 bg-transparent">
+                            <img
+                              src="/images/wish.svg"
+                              alt="wishlist"
+                              onClick={() => {
+                                addToWish(item?._id);
+                              }}
+                            />
+                          </button>
+                        </div>
+                        <div className="product-image text-center">
+                          <img
+                            src={item?.images[0].url}
+                            className="img-fluid mx-auto"
+                            alt="product_image"
+                            width={160}
+                          />
+                          <img
+                            src="/images/watch-01.jpg"
+                            className="img-fluid mx-auto"
+                            alt="product_image"
+                            width={160}
+                          />
+                        </div>
+                        <div className="product-details">
+                          <h6 className="brand">{item?.brand}</h6>
+                          <h5 className="product-title">{item?.title}</h5>
+                          <ReactStars
+                            count={5}
+                            size={24}
+                            value={Number(item?.totalrating)}
+                            edit={false}
+                            activeColor="#ffd700"
+                          />
+                          <p className="price">$ {item?.price}</p>
+                        </div>
+                        <div className="action-bar position-absolute">
+                          <div className="d-flex flex-column gap-15">
+                            <button className="border-0 bg-transparent">
+                              <img
+                                src="/images/prodcompare.svg"
+                                alt="compare"
+                              />
+                            </button>
+                            <button className="border-0 bg-transparent">
+                              <img src="/images/view.svg" alt="view" />
+                            </button>
+                            <button className="border-0 bg-transparent">
+                              <img src="/images/add-cart.svg" alt="addcart" />
+                            </button>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  );
+                }
+              })}
+          </div>
         </div>
       </Container>
 
@@ -299,6 +369,7 @@ const Home = () => {
                       price={item?.price}
                       sold={item?.sold}
                       quantity={item?.quantity}
+                      images={item?.images}
                     />
                   );
                 }
@@ -340,7 +411,7 @@ const Home = () => {
                           />
                         </button>
                       </div>
-                      <div className="product-image">
+                      <div className="product-image text-center">
                         <img
                           src={item?.images[0].url}
                           className="img-fluid mx-auto"

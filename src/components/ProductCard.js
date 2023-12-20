@@ -40,7 +40,7 @@ const ProductCart = (props) => {
                   }} />
                 </button>
               </div>
-              <div className="product-image">
+              <div className="product-image text-center">
                 <img
                   src={item?.images[0].url}
                   className="img-fluid mx-auto"
