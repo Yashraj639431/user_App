@@ -1,18 +1,59 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import BreadCrum from "../components/BreadCrum";
 import Meta from "../components/Meta";
 import { AiFillDelete } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Container from "./Container";
 import { useSelector, useDispatch } from "react-redux";
-import { getUserCart } from "../features/user/userSlice";
+import {
+  getUserCart,
+  deleteCartProduct,
+  updateCartProduct,
+} from "../features/user/userSlice";
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const [productUpdateDetail, setProductUpdateDetail] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(null);
+
   const getCartState = useSelector((state) => state.auth.cartProducts);
+
   useEffect(() => {
     dispatch(getUserCart());
   }, []);
+
+  useEffect(() => {
+    if (productUpdateDetail !== null) {
+      dispatch(
+        updateCartProduct({
+          cartItemId: productUpdateDetail?.cartItemId,
+          quantity: productUpdateDetail?.quantity,
+        })
+      );
+      setTimeout(() => {
+        dispatch(getUserCart());
+      }, 200);
+    }
+  }, [productUpdateDetail]);
+
+  const deleteACartProduct = (id) => {
+    dispatch(deleteCartProduct(id));
+    setTimeout(() => {
+      dispatch(getUserCart());
+    }, 300);
+  };
+
+  useEffect(() => {
+    let sum = 0;
+    for (let index = 0; index < getCartState?.length; index++) {
+      sum =
+        sum +
+        Number(getCartState[index].quantity) *
+          Number(getCartState[index].price);
+      setTotalAmount(sum);
+    }
+  }, [getCartState]);
+
   return (
     <>
       <Meta title={"Cart"}></Meta>
@@ -36,7 +77,7 @@ const Cart = () => {
                     <div className="cart-col-1 gap-15 d-flex align-items-center">
                       <div className="w-25">
                         <img
-                          src="/images/Watch.jpg"
+                          src={item?.productId?.images[0].url}
                           className="img-fluid"
                           alt="product"
                         />
@@ -68,13 +109,24 @@ const Cart = () => {
                           id=""
                           min={1}
                           max={10}
-                          // onChange={(e) => value(e.target.value)}
-                          value={item?.quantity}
-                          readOnly
+                          value={
+                            productUpdateDetail?.quantity
+                              ? productUpdateDetail?.quantity
+                              : item?.quantity
+                          }
+                          onChange={(e) => {
+                            setProductUpdateDetail({
+                              cartItemId: item?._id,
+                              quantity: e.target.value,
+                            });
+                          }}
                         />
                       </div>
                       <div>
-                        <AiFillDelete className="text-danger" />
+                        <AiFillDelete
+                          onClick={() => deleteACartProduct(item?._id)}
+                          className="text-danger"
+                        />
                       </div>
                     </div>
                     <div className="cart-col-4">
@@ -91,13 +143,15 @@ const Cart = () => {
               <Link to="/product" className="button">
                 Continue To Shopping
               </Link>
-              <div className="d-flex flex-column align-items-end">
-                <h4>Subtotal: $ 1000</h4>
-                <p>Taxes and shipping calculated at checkout</p>
-                <Link to="/checkout" className="button">
-                  Checkout
-                </Link>
-              </div>
+              {(totalAmount !== null || totalAmount !== 0) && (
+                <div className="d-flex flex-column align-items-end">
+                  <h4>Subtotal: $ {totalAmount}</h4>
+                  <p>Taxes and shipping calculated at checkout</p>
+                  <Link to="/checkout" className="button">
+                    Checkout
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
