@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
+import { config } from "../Utils/axiosConfig";
+import { createAnOrder } from "../features/user/userSlice";
 
 const shippingSchema = yup.object({
   firstName: yup.string().required("First Name is Required"),
@@ -20,10 +22,17 @@ const shippingSchema = yup.object({
 });
 
 const Checkout = () => {
+  const cartState = useSelector((state) => state.auth.cartProducts);
   const dispatch = useDispatch();
   const [totalAmount, setTotalAmount] = useState(null);
   const [shippingInfo, setShippingInfo] = useState(null);
-  const cartState = useSelector((state) => state.auth.cartProducts);
+  const [cartProductState, setCartProductState] = useState([]);
+  const [paymentInfo, setPaymentInfo] = useState({
+    razorpayPaymentId: "",
+    razorpayOrderId: "",
+  });
+
+  console.log(paymentInfo, shippingInfo);
 
   useEffect(() => {
     let sum = 0;
@@ -44,16 +53,20 @@ const Checkout = () => {
       city: "",
       country: "",
       pincode: "",
+      other: "",
     },
     validationSchema: shippingSchema,
     onSubmit: (values) => {
       setShippingInfo(values);
+      setTimeout(() => {
+        checkOutHandler();
+      }, 500);
     },
   });
 
   const loadScript = (src) => {
     return new Promise((resolve) => {
-      const script = document.createElement("root");
+      const script = document.createElement("script");
       script.src = src;
       script.onload = () => {
         resolve(true);
@@ -63,6 +76,89 @@ const Checkout = () => {
       };
       document.body.appendChild(script);
     });
+  };
+
+  useEffect(() => {
+    let items = [];
+    for (let index = 0; index < cartState?.length; index++) {
+      items.push({
+        product: cartState[index].productId._id,
+        quantity: cartState[index].quantity,
+        color: cartState[index].color._id,
+        price: cartState[index].price,
+      });
+    }
+    setCartProductState(items);
+  }, []);
+
+  console.log(cartProductState);
+  const checkOutHandler = async () => {
+    const res = await loadScript(
+      "https://checkout.razorpay.com/v1/checkout.js"
+    );
+    if (!res) {
+      alert("Razorpay SDK failed to Load");
+      return;
+    }
+    const result = await axios.post(
+      "http://localhost:5000/api/user/order/checkout",
+      { amount: totalAmount },
+      config
+    );
+    if (!result) {
+      alert("Something Went Wrong");
+      return;
+    }
+
+    const { amount, id: order_id, currency } = result.data.order;
+    const options = {
+      key: "rzp_test_xocS7vcETUF6l4", // Enter the Key ID generated from the Dashboard
+      amount: amount,
+      currency: currency,
+      name: "Yash Rajoriya",
+      description: "Test Transaction",
+      order_id: order_id,
+      handler: async function (response) {
+        const data = {
+          orderCreationId: order_id,
+          razorpayPaymentId: response.razorpay_payment_id,
+          razorpayOrderId: response.razorpay_order_id,
+        };
+
+        const result = await axios.post(
+          "http://localhost:5000/api/user/order/paymentVerification",
+          data,
+          config
+        );
+        setPaymentInfo({
+          razorpayPaymentId: response.razorpay_payment_id,
+          razorpayOrderId: response.razorpay_order_id,
+        });
+        dispatch(
+          createAnOrder({
+            totalPrice: totalAmount,
+            totalPriceAfterDiscount: totalAmount,
+            orderItems: cartProductState,
+            paymentInfo,
+            shippingInfo,
+          })
+        );
+      },
+      prefill: {
+        name: "Yash Rajoriya",
+        email: "yashrajoriya@example.com",
+        contact: "9999999999",
+      },
+      notes: {
+        address: "Yash Rajoriya Corporate Office",
+      },
+      theme: {
+        color: "#61dafb",
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
   };
   return (
     <>
@@ -122,7 +218,7 @@ const Checkout = () => {
                     onBlur={formik.handleBlur("country")}
                     value={formik.values.country}
                   >
-                    <option value="" selected disabled>
+                    <option value="" disabled>
                       Select Country
                     </option>
                     <option value="India">India</option>
@@ -193,7 +289,7 @@ const Checkout = () => {
                     onBlur={formik.handleBlur("state")}
                     value={formik.values.state}
                   >
-                    <option value="" selected disabled>
+                    <option value="" disabled>
                       State
                     </option>
                     <option value="Rajasthan">Rajasthan</option>
@@ -238,7 +334,11 @@ const Checkout = () => {
                     <Link to="/cart" className="button">
                       Continue to Shipping
                     </Link>
-                    <button className="button" type="submit">
+                    <button
+                      className="button"
+                      type="submit"
+                      onClick={checkOutHandler}
+                    >
                       Place Order
                     </button>
                   </div>

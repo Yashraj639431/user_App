@@ -1,4 +1,4 @@
-export const base_url = "http://localhost:5000/api/";
+export const base_url = "https://backend-chi-vert.vercel.app/";
 
 const getTokenFromLocalStorage = localStorage.getItem("customer")
   ? JSON.parse(localStorage.getItem("customer"))
