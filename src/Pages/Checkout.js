@@ -101,7 +101,7 @@ const Checkout = () => {
       return;
     }
     const result = await axios.post(
-      "http://localhost:5000/api/user/order/checkout",
+      "https://backend-chi-vert.vercel.app/api/user/order/checkout",
       { amount: totalAmount },
       config
     );
